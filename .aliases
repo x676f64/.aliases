@@ -34,11 +34,6 @@ alias gv="grep -v ${@}"
 alias gve="grep -vE ${@}"
 alias rpass="openssl rand -hex 8"
 
-
- f() {
-  find * -iname "$1"
- }
-
 # DOCKER ALIAS ##############################
  alias docker='sudo docker'
  alias docker-compose='sudo docker-compose'
@@ -48,6 +43,7 @@ alias rpass="openssl rand -hex 8"
  alias dnano='nano ./docker-compose.yml'
  alias dps='docker ps'
  
+ # Must be in docker local dir for these next two functions to work
  dexec () {
  docker exec -it $1 /bin/sh
  } 
@@ -61,6 +57,11 @@ stripctrl() {
   # ctrl-v, ctrl-m to place control char ^M
   sed -i 's/\x1b\[[0-9;]*m//g; s/^M//g' $1
 }
+
+# shortcut for find
+ f() {
+  find * -iname "$1"
+ }
 
 
 # Repeat a character `repeater 0 64` results in `0000000000000000000000000000000000000000000000000000000000000000`
