@@ -1,0 +1,144 @@
+
+
+
+
+## General ##
+alias b="cd ~/blockchain"
+alias cme="codium -a ." 
+alias co="codium -a"
+alias epro="codium ~/.zshrc" # Edit profile
+alias l="ls -latrh"
+alias nodeact=". env/bin/activate"
+alias p3="python3"
+alias pchain="proxychains4 -q -f ~/.proxychains.conf ${@}"
+alias reload=". ~/.zshrc"
+alias s="ssh ${@}"
+alias sconfig="codium ~/.ssh/config" # Edit ssh config
+alias stupid="find . -name '._*' -exec rm {} \;" # guards against stupid OSX
+alias web="python3 -m http.server ${@}"  #web --directory ~/tmp 8080
+
+# Nmap aliases
+alias n="nmap -Pn -T5 -d ${@}"
+alias n10="nmap --top-ports 10 -Pn -T5 -d ${@}"
+alias n100="nmap --top-ports 100 -Pn -T5 -d ${@}"
+alias n1000="nmap --top-ports 1000 -Pn -T5 -d ${@}"
+alias n10000="nmap --top-ports 10000 -Pn -T5 -d ${@}"
+alias nall="nmap -Pn -T5 -d -p- ${@}"
+alias nsu="sudo nmap -Pn -T3 -sU -d ${@}"
+alias nsu10="sudo nmap -Pn --top-ports 10 -T3 -sU -d ${@}"
+alias nsu100="sudo nmap -Pn --top-ports 100 -T3 -sU -d ${@}"
+alias nsu1000="sudo nmap -Pn --top-ports 1000 -T3 -sU -d ${@}"
+alias nsv="nmap -Pn -T5 -d -sV ${@}"
+alias nsvc="nmap -Pn -T5 -sV -sC -d ${@}"
+alias nsvc100="nmap --top-ports 100 -Pn -T5 -sV -sC -d ${@}"
+
+# Grep aliases
+alias ge="grep -E ${@}"
+alias gv="grep -v ${@}"
+alias gve="grep -vE ${@}"
+alias rpass="openssl rand -hex 8"
+
+
+ f() {
+  find * -iname "$1"
+ }
+
+# DOCKER ALIAS ##############################
+ alias docker='sudo docker'
+ alias docker-compose='sudo docker-compose'
+ alias ddo='docker-compose down'
+ alias dup='docker-compose up -d'
+ alias dlogs='docker-compose logs'
+ alias dnano='nano ./docker-compose.yml'
+ alias dps='docker ps'
+ 
+ dexec () {
+ docker exec -it $1 /bin/sh
+ } 
+ 
+ dlog () {
+ docker logs $1 --follow
+ }
+
+# Strip all control characters from a file
+stripctrl() {
+  # ctrl-v, ctrl-m to place control char ^M
+  sed -i 's/\x1b\[[0-9;]*m//g; s/^M//g' $1
+}
+
+
+# Repeat a character `repeater 0 64` results in `0000000000000000000000000000000000000000000000000000000000000000`
+repeater() { 
+  n=$2 ; chr="$1"; chr_string='';
+  for (( i=0; $i<$n; i++ ))
+  do
+      chr_string=$chr_string$chr
+  done
+  echo -n "$chr_string"
+}
+
+#Generata a private key and self-signed cert
+cert() { openssl genrsa -out $1.key 2048;
+	openssl req -new -key $1.key -x509 -days 3653 -out $1.crt;
+	cat $1.key $1.crt > $1.pem; }
+
+#Get string Length
+len() { echo -e -n "${@}"|wc -c ;}
+
+# Show interfaces
+ints() { ip -4 a ;}
+
+# Kill processes that match a string be careful that you're match is strict enough
+killme() {
+  for i in $(pgrep -f "${@}"); do
+  echo -e "Killing: $i"
+  kill -9 $i && echo -e "Successfully kill: $i"
+  done
+}
+
+checksol() {
+  # Returns json blob containing the bugs identified and the release data of the compiler version
+  if [[ -z "$1" ]]; then
+    curl -s "https://raw.githubusercontent.com/ethereum/solidity/develop/docs/bugs_by_version.json " |jq "."
+  else
+    curl -s "https://raw.githubusercontent.com/ethereum/solidity/develop/docs/bugs_by_version.json " |jq ".\"$1\""
+  fi
+}
+
+# cat users
+# HASHES123,administrator
+# cat passes
+# HASHES123,PLAINTEXT123
+# mergepp passes users
+# HASHES123:PLAINTEXT123:administrator
+# mergepp() {
+  mergepp() {
+    awk -F "," 'NR==FNR{A[$1]=$2; next} {A[$1]; B[$1]=$2} END{for (field in A) print field,A[field],B[field]}' OFS=':' ${@}
+}
+
+# Remote to remote scp `r2r source:~/path/file dest:~/path/.`
+r2r(){
+  # Add -L for symlinks
+  scp -r -3 ${@}
+}
+
+regex() {
+    # Usage: regex "string" "regex"
+    [[ $1 =~ $2 ]] && printf '%s\n' "${BASH_REMATCH[1]}"
+}
+
+rstrip() {
+    # Usage: rstrip "string" "pattern"
+    printf '%s\n' "${1%%$2}"
+}
+
+lstrip() {
+    # Usage: lstrip "string" "pattern"
+    printf '%s\n' "${1##$2}"
+}
+
+split() {
+   # Usage: split "string" "delimiter"
+   IFS=$'\n' read -d "" -ra arr <<< "${1//$2/$'\n'}"
+   printf '%s\n' "${arr[@]}"
+}
